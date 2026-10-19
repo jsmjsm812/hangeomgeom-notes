@@ -1,0 +1,624 @@
+<title>한능검 Day-01 강의 노트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 강의 화이트보드를 옮긴 노트. 블루 암기 타일 + 형광 노랑 포스트잇 + 빨간 마커 표시, 중요한 곳엔 별. */
+:root {
+  --bg: #EDEFFA;
+  --surface: #FFFFFF;
+  --board: #F6F7FF;
+  --fg: #1A1F3D;
+  --muted: #586088;
+  --line: #D3D8EE;
+  --tile: #BFE1FF;
+  --tile-fg: #0E2A57;
+  --sticky: #F4E28C;
+  --sticky-fg: #3B3208;
+  --marker: #D7242F;
+  --star: #F5A800;
+  --accent: #3446C9;
+  --chip: #E1E5F8;
+  --f-display: "Black Han Sans", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --f-hand: "Nanum Pen Script", "Noto Sans KR", cursive;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1328; --surface: #181D3A; --board: #1E2444; --fg: #E7EAFB; --muted: #A2AAD0; --line: #2F3763;
+    --tile: #2D5588; --tile-fg: #E8F3FF; --sticky: #7C6A1C; --sticky-fg: #FFF6CF; --marker: #FF6B72;
+    --star: #FFC93C; --accent: #8EA0FF; --chip: #262D56; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1328; --surface: #181D3A; --board: #1E2444; --fg: #E7EAFB; --muted: #A2AAD0; --line: #2F3763;
+  --tile: #2D5588; --tile-fg: #E8F3FF; --sticky: #7C6A1C; --sticky-fg: #FFF6CF; --marker: #FF6B72;
+  --star: #FFC93C; --accent: #8EA0FF; --chip: #262D56; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 15px; line-height: 1.7;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 56px;
+}
+.wrap { max-width: 880px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.3; }
+p { margin: 0; }
+a { color: var(--accent); }
+
+/* 별 */
+.s { display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -0.17em; background: var(--star);
+  -webkit-mask: var(--star-mask) center / contain no-repeat; mask: var(--star-mask) center / contain no-repeat;
+  --star-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.2L12 17.9l-6.4 3.6 1.4-7.2-5.3-5 7.2-.9z' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+
+/* 헤더 */
+header { padding-block: 36px 18px; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+h1 { font-family: var(--f-display); font-size: clamp(30px, 7vw, 46px); font-weight: 400; margin-top: 6px; letter-spacing: -.01em; }
+.sub { margin-top: 10px; color: var(--muted); max-width: 60ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; align-items: center; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.toggle { appearance: none; border: 2px solid var(--fg); background: var(--surface); color: var(--fg); font: 700 13px var(--f-body);
+  padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.toggle[aria-pressed="true"] { background: var(--marker); border-color: var(--marker); color: #fff; }
+.toggle:focus-visible, nav a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* 네비 */
+nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 8px; margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }
+nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+nav a { display: block; white-space: nowrap; text-decoration: none; background: var(--chip); color: var(--fg); font-size: 13px; font-weight: 500; padding: 5px 12px; border-radius: 999px; }
+nav a:hover { background: var(--accent); color: var(--bg); }
+
+/* 섹션 */
+section { margin-top: 40px; }
+.era { font-family: var(--f-hand); font-size: 24px; color: var(--marker); line-height: 1; transform: rotate(-1.5deg); display: inline-block; }
+h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(25px, 5.5vw, 34px); margin-top: 2px; }
+h3 { font-size: 17px; font-weight: 700; margin-top: 26px; }
+.lead { color: var(--muted); margin-top: 6px; max-width: 66ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-top: 14px; min-width: 0; }
+ul.pts { margin: 8px 0 0; padding-left: 1.2em; }
+ul.pts li { margin: 3px 0; }
+ul.pts li::marker { color: var(--accent); }
+b.k { font-weight: 700; background: linear-gradient(transparent 62%, color-mix(in srgb, var(--sticky) 80%, transparent) 62%); }
+.hand { font-family: var(--f-hand); color: var(--marker); font-size: 21px; line-height: 1.2; }
+
+/* 암기 보드 */
+.board { background: var(--board); border: 1px solid var(--line); border-radius: 16px; padding: 20px 14px 18px; margin-top: 14px; position: relative; min-width: 0; }
+.board > .cap { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 18px; }
+.board .cap strong { font-size: 15px; }
+.board .cap .hand { font-size: 22px; }
+.row { display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); gap: 22px 10px; justify-items: center; max-width: calc(var(--n, 6) * 108px); margin-inline: auto; }
+.row + .row { margin-top: 26px; }
+.row + ul.pts, .row + p.lead { margin-top: 22px; }
+.t { position: relative; display: flex; flex-direction: column; align-items: center; width: 100%; padding-bottom: 14px; cursor: default; }
+.t > b { position: relative; display: grid; place-items: center; width: min(100%, 72px); aspect-ratio: 1; background: var(--tile); color: var(--tile-fg);
+  border-radius: 14px; font-family: var(--f-display); font-weight: 400; font-size: clamp(24px, 7.4vw, 36px); line-height: 1; box-shadow: 0 2px 0 color-mix(in srgb, var(--tile-fg) 18%, transparent); }
+.t > i { font-style: normal; margin-top: 10px; font-size: clamp(13px, 3.6vw, 17px); font-weight: 500; line-height: 1.22; writing-mode: vertical-rl; text-orientation: upright; letter-spacing: .02em; color: var(--fg); min-height: 3.6em; }
+.t.sticky > b { background: var(--sticky); color: var(--sticky-fg); transform: rotate(-3.5deg); box-shadow: 3px 5px 0 color-mix(in srgb, var(--sticky-fg) 14%, transparent); border-radius: 4px 4px 14px 4px; }
+.t.imp > b::after { content: ""; position: absolute; top: -11px; right: -11px; width: 26px; height: 26px; background: var(--star);
+  -webkit-mask: var(--star-mask) center / contain no-repeat; mask: var(--star-mask) center / contain no-repeat; filter: drop-shadow(0 1px 0 rgba(0,0,0,.28)); transform: rotate(12deg); }
+.t.circle::before { content: ""; position: absolute; inset: -10px -9px 0; border: 3px solid var(--marker); border-radius: 46% 54% 44% 56% / 14% 12% 16% 12%; transform: rotate(-1.6deg); pointer-events: none; }
+.t.wavy::after, .t.line::after { content: ""; position: absolute; bottom: -6px; left: 14%; width: 72%; height: 11px; background: var(--marker);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 12' preserveAspectRatio='none'%3E%3Cpath d='M2 7 C10 1 14 11 22 6 S34 2 42 7 S56 11 64 5 S74 4 78 6' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 12' preserveAspectRatio='none'%3E%3Cpath d='M2 7 C10 1 14 11 22 6 S34 2 42 7 S56 11 64 5 S74 4 78 6' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+.t.line::after { height: 6px; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 6' preserveAspectRatio='none'%3E%3Cpath d='M2 4 C26 1 52 1 78 2' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 6' preserveAspectRatio='none'%3E%3Cpath d='M2 4 C26 1 52 1 78 2' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.t .go { position: absolute; top: -22px; left: 50%; font-family: var(--f-hand); color: var(--marker); font-size: 22px; transform: translateX(-30%) rotate(-6deg); white-space: nowrap; line-height: 1; }
+.arrow { grid-column: 1 / -1; font-family: var(--f-hand); color: var(--marker); font-size: 22px; justify-self: start; line-height: 1; }
+
+/* 암기 모드 */
+.study .t:not(.on) > i { filter: blur(8px); opacity: .55; }
+.study .t { cursor: pointer; }
+.study .t:not(.on) > b { outline: 2px dashed color-mix(in srgb, var(--muted) 60%, transparent); outline-offset: 3px; }
+
+/* 표 */
+.tbl { overflow-x: auto; margin-top: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; letter-spacing: .06em; color: var(--muted); background: var(--board); font-weight: 700; white-space: nowrap; }
+td:first-child { font-weight: 700; white-space: nowrap; }
+td .s { margin-inline: 1px; }
+
+/* 연도 타임라인 */
+.tl { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; counter-reset: none; }
+.tl li { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; position: relative; min-width: 0; }
+.tl .y { font-family: var(--f-display); font-size: 30px; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.tl .e { font-weight: 700; margin-top: 6px; line-height: 1.35; }
+.tl .m { font-family: var(--f-hand); color: var(--marker); font-size: 19px; line-height: 1.15; margin-top: 4px; }
+.tl li.hot { background: var(--board); border-color: var(--marker); }
+.tl li.hot::after { content: ""; position: absolute; top: -9px; right: -7px; width: 24px; height: 24px; background: var(--star);
+  -webkit-mask: var(--star-mask) center / contain no-repeat; mask: var(--star-mask) center / contain no-repeat; filter: drop-shadow(0 1px 0 rgba(0,0,0,.28)); }
+.plus8 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; font-family: var(--f-display); font-size: 26px; font-variant-numeric: tabular-nums; }
+.plus8 em { font-style: normal; font-family: var(--f-hand); color: var(--marker); font-size: 24px; }
+
+.note-box { background: var(--sticky); color: var(--sticky-fg); padding: 12px 16px; border-radius: 4px 4px 16px 4px; margin-top: 14px; transform: rotate(-.6deg); box-shadow: 3px 5px 0 color-mix(in srgb, var(--sticky-fg) 12%, transparent); font-weight: 500; }
+.note-box b { font-weight: 700; }
+footer { margin-top: 44px; color: var(--muted); font-size: 12.5px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (min-width: 720px) { .card { padding: 22px 24px; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">서경석의 다이어트 한능검 · Day-01</div>
+  <h1>선사부터 가야까지, 한 장으로</h1>
+  <p class="sub">약 2시간 55분 강의를 시대 순서로 정리했어요. 파란 타일은 강사의 암기 코드이고, 별이 붙은 곳은 강사가 시험에 자주 나온다고 강조한 부분이에요.</p>
+  <div class="legend">
+    <span><em class="s"></em> 시험 빈출·함정</span>
+    <span><b class="k">형광펜</b> 핵심어</span>
+    <button class="toggle" id="study" type="button" aria-pressed="false">암기 모드: 꺼짐</button>
+  </div>
+  <p class="legend" style="margin-top:8px">암기 모드를 켜면 타일 아래 글씨가 가려지고, 타일을 누를 때마다 정답이 나타나요.</p>
+</header>
+
+<nav aria-label="목차"><ul>
+  <li><a href="#orient">시험 안내</a></li><li><a href="#sunsa">선사</a></li><li><a href="#gojoseon">고조선</a></li><li><a href="#chulgi">철기 여러 나라</a></li>
+  <li><a href="#common">삼국 공통</a></li><li><a href="#goguryeo">고구려</a></li><li><a href="#baekje">백제</a></li><li><a href="#silla">신라</a></li><li><a href="#gaya">가야</a></li><li><a href="#years">연도</a></li><li><a href="#patterns">기출</a></li>
+</ul></nav>
+
+<main>
+<!-- 오리엔테이션 -->
+<section id="orient">
+  <span class="era">시작하기 전에</span>
+  <h2>시험 구조와 마킹 요령</h2>
+  <div class="card">
+    <ul class="pts">
+      <li>기본과 심화는 문제가 달라요. 이 강의는 <b class="k">심화</b>에 초점을 맞췄고, 기본도 통과할 수 있는 범위예요.</li>
+      <li>심화 80점 이상 1급, 70~80 2급, 60~70 3급 / 기본 80점 이상 4급, 70~80 5급, 60~70 6급. 기관·회사는 보통 <b class="k">3급 또는 2급 이상</b>을 요구해요.</li>
+      <li>50문제, 배점은 1점 10문제 + 3점 10문제 + 2점 30문제 = 100점. 문제는 대체로 시간 순서로 배열돼요(종합사·지역사 제외).</li>
+      <li><b class="k">마킹</b>은 한 문제 풀고 바로 하는 쪽을 추천해요. 몰아서 옮기면 밀려 쓰는 실수가 나요. 첫 시험은 다 풀고 10분 정도 남는 경우가 많아요 <em class="s"></em></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 선사 -->
+<section id="sunsa">
+  <span class="era">선사 시대</span>
+  <h2>구석기에서 철기까지</h2>
+  <p class="lead">도구로 시대를 나눠요. 구석기와 신석기는 완전한 선사 시대이고, 1번 문제로 자주 나와요 <em class="s"></em></p>
+
+  <div class="board">
+    <div class="cap"><strong>구석기</strong><span class="hand">웰컴구 동막개</span></div>
+    <div class="row" style="--n:4">
+      <div class="t sticky"><b>구</b><i>구석기</i></div>
+      <div class="t"><b>동</b><i>동굴·이동</i></div>
+      <div class="t"><b>막</b><i>막집</i></div>
+      <div class="t imp wavy"><b>개</b><i>개로 끝</i></div>
+    </div>
+    <div class="row" style="--n:3; max-width:324px">
+      <div class="t"><b>공</b><i>공주 석장리</i></div>
+      <div class="t"><b>연</b><i>연천 전곡리</i></div>
+      <div class="t"><b>단</b><i>단양 수양개</i></div>
+    </div>
+    <ul class="pts">
+      <li>뗀석기: 주먹도끼, 찍개, 슴베찌르개, 긁개. 구석기 도구는 대부분 <b class="k">"~개"</b>로 끝나고 주먹도끼만 예외라서 "주먹도끼와 찍개"로 묶어 외워요.</li>
+      <li>수렵·채집(비생산적), 이동 생활, 평등 사회. 유적은 앞 글자를 따서 <b class="k">공연단</b>.</li>
+    </ul>
+  </div>
+
+  <div class="board">
+    <div class="cap"><strong>신석기</strong><span class="hand">농삼신라빗 (원래는 가락바퀴, 리듬 때문에 "라")</span></div>
+    <div class="row" style="--n:5">
+      <div class="t imp circle"><b>농</b><i>농경·목축</i></div>
+      <div class="t"><b>삼</b><i>동삼동 암사동</i></div>
+      <div class="t"><b>신</b><i>토·애·샤</i></div>
+      <div class="t imp"><b>라</b><i>가락바퀴</i></div>
+      <div class="t imp"><b>빗</b><i>빗살무늬</i></div>
+    </div>
+    <ul class="pts">
+      <li><b class="k">신석기 혁명</b>: 농경·목축이 시작됐어요. 단, 벼농사가 아니라 조·피·수수 같은 잡곡 농사예요.</li>
+      <li>삼: 부산 <b class="k">동삼</b>동, 서울 <b class="k">암사</b>동(숫자 3과 4가 들어간 유적). 신앙은 토테미즘·애니미즘·샤머니즘.</li>
+      <li>가락바퀴(실 뽑기)와 뼈바늘(옷·그물)로 <b class="k">의복 생활</b> 시작. 빗살무늬 토기는 밑이 뾰족해서 강가·해안 모래에 꽂아 써요.</li>
+      <li>움집에서 정착 생활, 물가 근처, 조개무지(패총). 간석기(갈돌·갈판)가 등장해요. 정답으로 많이 나오는 시대예요.</li>
+    </ul>
+  </div>
+
+  <div class="board">
+    <div class="cap"><strong>청동기</strong><span class="hand">청개고 비벼반</span></div>
+    <div class="row" style="--n:6">
+      <div class="t sticky"><b>청</b><i>동기</i><span class="go">go</span></div>
+      <div class="t wavy"><b>계</b><i>급출현</i></div>
+      <div class="t imp wavy"><b>고</b><i>인돌</i></div>
+      <div class="t imp circle"><b>비</b><i>파형동검</i></div>
+      <div class="t wavy"><b>벼</b><i>농사</i></div>
+      <div class="t imp"><b>반</b><i>달돌칼</i></div>
+    </div>
+    <ul class="pts">
+      <li><b class="k">벼농사 → 잉여 생산물 → 사유 재산·빈부 격차 → 전쟁 → 계급</b>. 신석기와 청동기는 무조건 나와요 <em class="s"></em></li>
+      <li>전쟁 대비: 나무 담장 <b class="k">목책</b>과 도랑 <b class="k">환호</b>. 집터는 물가에서 구릉(언덕)으로 이동해요.</li>
+      <li>무덤은 고인돌(유네스코 세계유산)과 돌널무덤. 토기는 민무늬·미송리식 토기. 비파형 동검은 나중에 쭉 뻗은 세형 동검으로 발전해요.</li>
+    </ul>
+  </div>
+
+  <div class="board">
+    <div class="cap"><strong>철기</strong><span class="hand">철세 중독</span></div>
+    <div class="row" style="--n:4">
+      <div class="t sticky"><b>철</b><i>철제 농기구·무기</i></div>
+      <div class="t imp"><b>세</b><i>세형동검</i></div>
+      <div class="t imp"><b>중</b><i>중국 교류</i></div>
+      <div class="t"><b>독</b><i>독무덤</i></div>
+    </div>
+    <ul class="pts">
+      <li>중국과 교류한 증거로 중국 화폐 <b class="k">오수전·명도전·반량전</b>(앞 글자로 "오명반")이 나와요.</li>
+      <li>무덤은 항아리 독무덤과 덧널무덤. 이런 무덤이 나오면 철기예요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 고조선 -->
+<section id="gojoseon">
+  <span class="era">최초의 국가</span>
+  <h2>고조선</h2>
+  <p class="lead">청동기와 철기에 걸쳐 있어서, 문제에서 <b class="k">전기(단군)</b>와 <b class="k">후기(위만)</b>를 나눠 묻는 경우가 많고 초반인데도 3점이 나와요 <em class="s"></em></p>
+
+  <div class="board">
+    <div class="cap"><strong>관직 비교</strong><span class="hand">깔끔한 최초의 국가 vs 거친 고구려</span></div>
+    <div class="row" style="--n:3; max-width:324px">
+      <div class="t imp"><b>상</b><i>상</i></div>
+      <div class="t"><b>대</b><i>대부</i></div>
+      <div class="t"><b>장</b><i>장군</i></div>
+    </div>
+    <p class="lead" style="text-align:center">고조선: 상 · 대부 · 장군 / 고구려: 상가 · 고추가 · 대로 · 패자 · 사자 · 조의 · 선인</p>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>구분</th><th>단군 조선 (전기)</th><th>위만 조선 (후기)</th></tr></thead>
+    <tbody>
+      <tr><td>시기</td><td>청동기</td><td>철기 본격 수용</td></tr>
+      <tr><td>왕·인물</td><td><b>부왕 → 준왕</b> (부자 세습)</td><td>연나라 <b>위만</b>이 망명 후 준왕을 몰아냄, 마지막 왕 <b>우거왕</b></td></tr>
+      <tr><td>사건</td><td>연 장수 <b>진개</b> 침략으로 위기</td><td>철제 무기로 진번·임둔 복속, 한과 진국 사이 <b>중계 무역</b></td></tr>
+      <tr><td>멸망</td><td colspan="2">한 무제 침략 → <b>왕검성 함락(기원전 108)</b> → 한군현 설치 <em class="s"></em> (우거왕 사망 · 왕검성 함락 · 군현 설치는 모두 같은 말)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card">
+    <ul class="pts">
+      <li><b class="k">단군왕검</b>: 단군은 제사장, 왕검은 정치적 지배자라서 <b class="k">제정일치</b> 사회예요. (삼한은 제정 분리)</li>
+      <li>단군 신화가 실린 책은 <b class="k">삼국유사(일연)</b>와 <b class="k">제왕운기(이승휴)</b>. 삼국사기 김부식과 헷갈리지 않게 "사기=김부식, 유사=일연"으로 외워요.</li>
+      <li>법은 <b class="k">8조법(범금 8조)</b>. 강의에서는 "팔고 사고"로 외웠어요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 철기 여러 나라 -->
+<section id="chulgi">
+  <span class="era">철기 시대 여러 나라</span>
+  <h2>부고옥동삼</h2>
+  <p class="lead">북쪽에서 남쪽 순서로 부여, 고구려, 옥저, 동예, 삼한이에요. 지도 문제로도 나와요.</p>
+
+  <div class="board">
+    <div class="cap"><strong>한눈에 보기</strong><span class="hand">부고옥동삼</span></div>
+    <div class="row" style="--n:5">
+      <div class="t imp"><b>부</b><i>사출도</i></div>
+      <div class="t"><b>고</b><i>제가회의</i></div>
+      <div class="t imp"><b>옥</b><i>민며느리</i></div>
+      <div class="t imp"><b>동</b><i>책화</i></div>
+      <div class="t imp"><b>삼</b><i>소도</i></div>
+    </div>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>나라</th><th>제천 행사</th><th>핵심 특징</th></tr></thead>
+    <tbody>
+      <tr><td>부여</td><td>영고 <b>12월</b> <em class="s"></em></td><td>5부족 연맹. 왕 아래 <b>마가·우가·저가·구가</b>가 <b>사출도</b>를 다스림 / 1책 12법(훔치면 12배 변상) / 순장 / 형사취수제 / 우제점법</td></tr>
+      <tr><td>고구려</td><td>동맹 10월</td><td>5부족 연맹, 귀족 회의 <b>제가 회의</b> / <b>서옥제</b>(신랑이 처가에 집을 지음) / 창고 <b>부경</b> / 형사취수제</td></tr>
+      <tr><td>옥저</td><td>-</td><td>군장 <b>읍군·삼로</b> / <b>민며느리제</b> <em class="s"></em> / <b>골장제</b>(가족 공동묘)</td></tr>
+      <tr><td>동예</td><td>무천 10월</td><td>군장 <b>읍군·삼로</b> / <b>책화</b>(경계를 넘으면 소·말로 변상) <em class="s"></em> / 족외혼 / 단궁·과하마·반어피</td></tr>
+      <tr><td>삼한</td><td>계절제 5월·10월</td><td>군장 <b>신지·읍차</b> / 천군이 <b>소도</b>를 다스림(제정 분리) / 변한은 <b>철</b>(덩이쇠)로 유명, 훗날 가야</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="board">
+    <div class="cap"><strong>동예 한 번에</strong><span class="hand">동무랑 책 들고 단과반 간다</span></div>
+    <div class="row" style="--n:6">
+      <div class="t"><b>동</b><i>동예</i></div>
+      <div class="t"><b>무</b><i>무천</i></div>
+      <div class="t imp"><b>책</b><i>책화</i></div>
+      <div class="t"><b>단</b><i>단궁</i></div>
+      <div class="t"><b>과</b><i>과하마</i></div>
+      <div class="t"><b>반</b><i>반어피</i></div>
+    </div>
+  </div>
+  <div class="note-box">읍군·삼로만 나오면 옥저인지 동예인지 알 수 없어요. 뒤에 나오는 <b>무천·책화</b>(동예)나 <b>민며느리</b>(옥저)를 끝까지 읽고 정하세요. 옥저는 "며느리는 옥을 좋아해"로 외워요.</div>
+</section>
+
+<!-- 삼국 공통 -->
+<section id="common">
+  <span class="era">삼국 시대 공통</span>
+  <h2>귀족 회의와 불교 수용</h2>
+  <p class="lead">귀족 회의 이름은 문제에 자주 나오는 구분 포인트예요 <em class="s"></em> 신라만 천년 동안 수도가 경주(금성)로 같았어요.</p>
+
+  <div class="board">
+    <div class="cap"><strong>귀족 회의</strong><span class="hand">재고 · 백정 · 신화</span></div>
+    <div class="row" style="--n:3; max-width:324px">
+      <div class="t imp"><b>재</b><i>고구려 제가</i></div>
+      <div class="t imp"><b>백</b><i>백제 정사암</i></div>
+      <div class="t imp"><b>신</b><i>신라 화백</i></div>
+    </div>
+    <p class="lead" style="text-align:center">고구려와 백제는 다수결, 신라 화백 회의는 <b class="k">만장일치</b>예요.</p>
+  </div>
+
+  <div class="board">
+    <div class="cap"><strong>불교 수용</strong><span class="hand">고전순 동백마 (고전소설 · 동백꽃)</span></div>
+    <div class="row" style="--n:6">
+      <div class="t"><b>고</b><i>고구려</i></div>
+      <div class="t"><b>전</b><i>전진</i></div>
+      <div class="t"><b>순</b><i>순도</i></div>
+      <div class="t"><b>동</b><i>동진</i></div>
+      <div class="t"><b>백</b><i>백제</i></div>
+      <div class="t"><b>마</b><i>마라난타</i></div>
+    </div>
+  </div>
+</section>
+
+<!-- 고구려 -->
+<section id="goguryeo">
+  <span class="era">삼국 · 고구려</span>
+  <h2>천동미원 소광장 양류보</h2>
+  <p class="lead">수도는 졸본, 국내성(유리왕), 평양성(장수왕, 마지막 수도) 순서예요. 시조는 주몽(동명성왕), 마지막 왕은 보장왕.</p>
+
+  <div class="board">
+    <div class="cap"><strong>초기 · 중기</strong><span class="hand">천동미원 · 소광장</span></div>
+    <div class="row" style="--n:4">
+      <div class="t imp"><b>천</b><i>진대법</i></div>
+      <div class="t"><b>동</b><i>환도성 함락</i></div>
+      <div class="t"><b>미</b><i>낙랑 축출</i></div>
+      <div class="t imp"><b>원</b><i>평양성 전사</i></div>
+    </div>
+    <div class="row" style="--n:3; max-width:324px">
+      <div class="t imp"><b>소</b><i>불태율</i></div>
+      <div class="t imp"><b>광</b><i>영락 400년</i></div>
+      <div class="t imp"><b>장</b><i>평양 천도</i></div>
+    </div>
+    <div class="row" style="--n:3; max-width:324px">
+      <div class="t"><b>양</b><i>살수 대첩</i></div>
+      <div class="t"><b>류</b><i>천리장성</i></div>
+      <div class="t imp"><b>보</b><i>안시성 멸망</i></div>
+    </div>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>왕</th><th>핵심</th></tr></thead>
+    <tbody>
+      <tr><td>고국천왕 <em class="s"></em></td><td><b>진대법</b>(봄에 빌려주고 가을에 갚는 빈민 구제), 을파소의 건의. "진대 → 천대받는 사람 구제 → 고국천"</td></tr>
+      <tr><td>동천왕</td><td>위나라 <b>관구검</b> 침략, <b>환도성 함락</b></td></tr>
+      <tr><td>미천왕</td><td>4세기 초 <b>낙랑·대방군 축출</b>, <b>서안평 점령</b>. "미대낙서"</td></tr>
+      <tr><td>고국원왕 <em class="s"></em></td><td>백제 <b>근초고왕</b>의 평양성 공격에 전사("원통하게 죽음")</td></tr>
+      <tr><td>소수림왕 <em class="s"></em></td><td>고국원왕의 아들. <b>불교 수용·태학 설립(최초 국립대학)·율령 반포</b> = "불태율". "아빠의 복수의 의지를 불태웠어요"</td></tr>
+      <tr><td>광개토대왕 <em class="s"></em></td><td>최초의 연호 <b>영락</b>. <b>400년</b> 신라 내물 마립간 요청으로 5만 군사를 보내 왜 격퇴 → 이 과정에서 <b>금관가야 쇠퇴</b>. 증거: 경주 호우총의 <b>호우명 그릇</b>(바닥에 "광개토지호태왕")</td></tr>
+      <tr><td>장수왕 <em class="s"></em></td><td>5세기 <b>남진 정책, 평양 천도</b>. 백제 <b>한성 함락·개로왕 전사</b>. 충주 고구려비, 광개토대왕릉비 건립</td></tr>
+      <tr><td>영양왕</td><td>수 양제 침입 → <b>살수 대첩(612, 을지문덕)</b>. 온달이 아단성에서 전사. 역사서 <b>신집 5권(이문진)</b></td></tr>
+      <tr><td>영류왕</td><td>당 침입 대비 <b>천리장성</b> 착공. <b>642 연개소문 정변</b>으로 폐위</td></tr>
+      <tr><td>보장왕</td><td>연개소문이 실권을 쥠. <b>안시성 전투(645)</b>. <b>668 평양성 함락</b>으로 멸망</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="card">
+    <h3 style="margin-top:0">고구려 멸망 이후</h3>
+    <ul class="pts">
+      <li>부흥운동 인물은 <b class="k">검모잠·고연무·안승</b>(고부 = 검고안). 안승은 신라에서 금마저(익산) <b>보덕국 왕</b>이 됐어요.</li>
+      <li>연개소문 사후 아들 <b>남생·남건·남산</b>이 권력 다툼을 벌여 고구려가 약해졌어요(연개소문은 사료에 천개소문으로도 나와요).</li>
+      <li><b class="k">장수왕과 개로왕 순서 함정</b>: 개로왕이 북위에 도와달라는 <b>국서를 먼저</b> 보냈고, 북위가 이를 장수왕에게 알려 역효과가 났어요. 그 뒤 장수왕이 한성을 공격했어요 <em class="s"></em></li>
+      <li>장수왕의 평양 천도에 위협을 느낀 신라 눌지 마립간과 백제 비유왕이 <b>나제 동맹(비눌 동맹)</b>을 맺었고, 나중에 동성왕과 소지 마립간은 <b>결혼 동맹(동소지)</b>까지 갔어요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 백제 -->
+<section id="baekje">
+  <span class="era">삼국 · 백제</span>
+  <h2>고근침 비계문동 무성무의</h2>
+  <p class="lead">수도는 한성(서울), 웅진(공주, 문주왕), 사비(부여, 성왕, 마지막 수도) 순서예요. "한공부"(한웅사)로 외워요. 건국자는 주몽의 아들 온조, 건국 유적은 서울 석촌동 고분군. 관등은 <b class="k">16관등과 6좌평</b>, 신라는 17관등이에요.</p>
+
+  <div class="board">
+    <div class="cap"><strong>왕 순서</strong><span class="hand">고근침 · 비계문동 · 무성무의</span></div>
+    <div class="row" style="--n:3; max-width:324px">
+      <div class="t"><b>고</b><i>6좌평 공복</i></div>
+      <div class="t imp"><b>근</b><i>전성기</i></div>
+      <div class="t imp circle"><b>침</b><i>불교 수용</i></div>
+    </div>
+    <div class="row" style="--n:4">
+      <div class="t"><b>비</b><i>나제 동맹</i></div>
+      <div class="t imp"><b>계</b><i>개로왕 한성</i></div>
+      <div class="t"><b>문</b><i>웅진 천도</i></div>
+      <div class="t"><b>동</b><i>결혼 동맹</i></div>
+    </div>
+    <div class="row" style="--n:4">
+      <div class="t imp"><b>무</b><i>무령왕릉</i></div>
+      <div class="t imp"><b>성</b><i>사비 천도</i></div>
+      <div class="t"><b>무</b><i>미륵사지</i></div>
+      <div class="t imp"><b>의</b><i>660 멸망</i></div>
+    </div>
+  </div>
+  <div class="note-box"><b>침류왕 함정 <em class="s"></em></b> 보통은 불교를 받아들이고 전성기가 오는데, 백제는 <b>근초고왕의 전성기 다음에 침류왕이 불교를 수용</b>했어요. 71회에서 시기순 배열 문제로 나왔어요.</div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>왕</th><th>핵심</th></tr></thead>
+    <tbody>
+      <tr><td>고이왕</td><td>3세기. 6좌평, 16관등, 공복 제정으로 국가 기틀 마련</td></tr>
+      <tr><td>근초고왕 <em class="s"></em></td><td>4세기 전성기. 평양성 공격(고국원왕 전사), <b>마한 정복</b>, 동진 교류, 일본에 <b>칠지도</b> 하사(추정). 역사서 <b>서기(고흥)</b>. "근고기 = 근초고왕 고흥 서기"</td></tr>
+      <tr><td>침류왕 <em class="s"></em></td><td>동진에서 온 마라난타를 통해 <b>불교 수용</b></td></tr>
+      <tr><td>개로왕 <em class="s"></em></td><td>북위에 국서를 보냄 → 장수왕 침략 → <b>한성 함락, 전사</b>("괴로워서 죽음")</td></tr>
+      <tr><td>문주왕</td><td>한성 함락 후 <b>웅진(공주) 천도</b></td></tr>
+      <tr><td>무령왕 <em class="s"></em></td><td>6세기 중흥. <b>22담로</b>에 왕족 파견. <b>무령왕릉</b>은 중국 남조 양나라 양식의 <b>벽돌무덤</b>, 관은 일본산 나무, <b>매지권</b>(도교 영향), 피장자와 축조 연대가 확인된 유일한 삼국 무덤</td></tr>
+      <tr><td>성왕 <em class="s"></em></td><td>6세기. <b>사비(부여) 천도, 국호 남부여</b>. 신라 진흥왕과 <b>나제 연합</b>으로 한강 하류 회복 → 진흥왕의 배신 → <b>관산성(옥천)</b>에서 전사</td></tr>
+      <tr><td>무왕</td><td>서동요 설화. <b>익산</b> 중시, <b>미륵사지 석탑</b>(현존 가장 오래된 석탑). "무익, 무미건조"</td></tr>
+      <tr><td>의자왕</td><td>초기엔 용맹. <b>대야성(합천) 함락(642)</b>. <b>660 사비성 함락</b>으로 멸망</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="card">
+    <h3 style="margin-top:0">백제 멸망과 부흥운동</h3>
+    <ul class="pts">
+      <li>마지막 전투는 논산 <b class="k">황산벌 전투</b>(계백, 어린 화랑 관창).</li>
+      <li>부흥운동 인물은 <b class="k">흑도복풍</b> = 흑치상지(임존성), 도침·복신(주류성), 왕자 부여풍(일본 유학). <b>백강 전투</b>에서 나당 연합군에 패배했어요(왜 지원군 포함).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 신라 -->
+<section id="silla">
+  <span class="era">삼국 · 신라</span>
+  <h2>지법진에서 문무왕까지</h2>
+  <p class="lead">귀족 회의는 화백 회의(만장일치), 의장은 <b class="k">상대등</b>이에요. 상대등의 권한이 커지면 왕권이 약해져요. 왕 직속 집사부의 장 시중은 왕권과 같이 움직여요. 신분제는 <b class="k">골품제</b>(성골 &gt; 진골 &gt; 6~1두품)이고, 관등 이름이 <b>찬</b>으로 끝나면 신라, <b>좌평</b>이면 백제예요.</p>
+
+  <div class="board">
+    <div class="cap"><strong>지증왕 (6세기 초)</strong><span class="hand">동순이가 왕이지라 우우</span></div>
+    <div class="row" style="--n:4">
+      <div class="t imp"><b>동</b><i>동시전</i></div>
+      <div class="t imp"><b>순</b><i>순장 폐지</i></div>
+      <div class="t"><b>이</b><i>이사부</i></div>
+      <div class="t imp"><b>왕</b><i>왕 칭호</i></div>
+    </div>
+    <div class="row" style="--n:4">
+      <div class="t"><b>지</b><i>지증왕</i></div>
+      <div class="t imp"><b>라</b><i>신라 국호</i></div>
+      <div class="t"><b>우</b><i>우경</i></div>
+      <div class="t"><b>우</b><i>우산국</i></div>
+    </div>
+    <p class="lead">칭호는 거서간, 차차웅, 이사금, 마립간(내물왕부터)을 거쳐 지증왕 때 비로소 중국식 <b>왕</b>이 돼요. 이사부는 6세기 전체에서 활약한 장군이라 지증왕에만 묶으면 안 돼요 <em class="s"></em></p>
+  </div>
+
+  <div class="board">
+    <div class="cap"><strong>법흥왕</strong><span class="hand">비읍비읍: 병부 + 상대등</span></div>
+    <div class="row" style="--n:5">
+      <div class="t imp"><b>병</b><i>병부</i></div>
+      <div class="t imp"><b>상</b><i>상대등</i></div>
+      <div class="t imp"><b>이</b><i>이차돈 공인</i></div>
+      <div class="t"><b>건</b><i>연호 건원</i></div>
+      <div class="t"><b>율</b><i>율령 반포</i></div>
+    </div>
+    <p class="lead">이차돈의 순교(흰 피가 솟음)를 계기로 귀족들도 인정해서 불교가 <b class="k">공인</b>됐어요. 금관가야 병합도 법흥왕 때예요("법 = 금관가야").</p>
+  </div>
+
+  <div class="board">
+    <div class="cap"><strong>진흥왕</strong><span class="hand">신라 전성기</span></div>
+    <div class="row" style="--n:5">
+      <div class="t imp"><b>한</b><i>한강 독차지</i></div>
+      <div class="t imp"><b>순</b><i>순수비</i></div>
+      <div class="t imp"><b>대</b><i>대가야 정복</i></div>
+      <div class="t"><b>화</b><i>화랑도 개편</i></div>
+      <div class="t"><b>국</b><i>국사 거칠부</i></div>
+    </div>
+    <ul class="pts">
+      <li>성왕과 연합해 고구려에게서 한강을 되찾을 때 <b>상류는 신라, 하류는 백제</b>로 나눴다가, 하류까지 독차지하고 성왕을 배신했어요(관산성). 평택 <b>당항성</b>을 얻어 중국과 직접 교역했어요.</li>
+      <li>순수비는 북한산비·창녕비·황초령비·마운령비. 북한산비와 황초령비는 조선의 <b>김정희</b>가 『금석과안록』에서 진흥왕 순수비임을 밝혔어요(전에는 무학대사비로 오인) <em class="s"></em> 단양 적성비도 있어요.</li>
+      <li>대가야는 "고국천왕의 진대법 → 진흥왕의 대가야"로 외워요.</li>
+    </ul>
+  </div>
+
+  <div class="board">
+    <div class="cap"><strong>선덕여왕</strong><span class="hand">황분첨 (분첩이 노랗다)</span></div>
+    <div class="row" style="--n:3; max-width:324px">
+      <div class="t"><b>황</b><i>황룡사 9층 목탑</i></div>
+      <div class="t imp"><b>분</b><i>분황사 모전석탑</i></div>
+      <div class="t"><b>첨</b><i>첨성대</i></div>
+    </div>
+    <ul class="pts">
+      <li>최초의 여왕(성골). 성골 남자가 끊겨서 여왕이 나왔어요. 진덕여왕으로 넘어갈 때 <b>비담·염종의 난</b>이 일어났고 <b>김유신</b>이 진압했어요.</li>
+      <li>분황사 모전석탑은 돌로 벽돌탑을 흉내낸 신라 최고(最古)의 석탑이고, 황룡사 9층 목탑은 자장의 건의로 세웠으며 몽골 침입 때 불에 탔어요(황룡사는 진흥왕, 탑은 선덕여왕).</li>
+    </ul>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>왕</th><th>핵심</th></tr></thead>
+    <tbody>
+      <tr><td>내물 마립간</td><td><b>400년</b> 왜 침입 → 광개토대왕에게 구원 요청. 김씨 왕위 세습 시작</td></tr>
+      <tr><td>눌지 마립간</td><td>백제 비유왕과 나제 동맹. 소지 마립간은 동성왕과 결혼 동맹</td></tr>
+      <tr><td>태종 무열왕 <em class="s"></em></td><td>김춘추. 최초의 <b>진골 출신 왕</b>. <b>660 백제 멸망</b>. 중앙 감찰 <b>사정부</b> 설치</td></tr>
+      <tr><td>문무왕 <em class="s"></em></td><td>668 고구려 멸망, <b>676 나당 전쟁 승리(통일 완성)</b>. 지방 감찰 <b>외사정</b> 파견. 전투는 <b>매소성(육전)·기벌포(해전)</b></td></tr>
+    </tbody>
+  </table></div>
+  <div class="card">
+    <ul class="pts">
+      <li><b class="k">당의 통치 기구</b> <em class="s"></em> 백제 멸망 후 <b>웅진 도독부</b>, 신라 땅에 <b>계림 도독부</b>, 고구려 멸망 후 평양에 <b>안동 도호부</b>. 이를 본 신라가 나당 전쟁을 준비해요. 웅진·계림 도독부는 백제 멸망~고구려 멸망 사이, 안동 도호부는 고구려 멸망~나당 전쟁 사이예요.</li>
+      <li>신라 국제 무역항은 당항성(평택), 울산, 영암, 청해진(완도)이에요.</li>
+      <li>예고: 신문왕은 관료전 지급과 녹읍 폐지, 원성왕은 독서삼품과예요(다음 시간).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 가야 -->
+<section id="gaya">
+  <span class="era">연맹 국가</span>
+  <h2>가야</h2>
+  <p class="lead">6가야 연맹이라 중앙집권 국가가 되지 못했어요. 철 생산과 중계 무역으로 번성했고, 시험에는 <b class="k">멸망</b>이 가장 자주 나와요 <em class="s"></em></p>
+  <div class="board">
+    <div class="cap"><strong>두 맹주 구분</strong><span class="hand">금김 대성동 / 고지가 저긴데 학수고대</span></div>
+    <div class="row" style="--n:4">
+      <div class="t sticky"><b>금</b><i>금관가야 김해</i></div>
+      <div class="t imp"><b>법</b><i>법흥왕 병합</i></div>
+      <div class="t sticky"><b>대</b><i>대가야 고령</i></div>
+      <div class="t imp"><b>진</b><i>진흥왕 정복</i></div>
+    </div>
+    <ul class="pts">
+      <li><b>금관가야</b>(전기 맹주): 건국자 <b>김수로</b>(구지가), 고분은 김해 <b>대성동</b> 고분군. 광개토대왕의 고구려군 때문에 쇠퇴했다가 법흥왕 때 병합돼요("김대성").</li>
+      <li><b>대가야</b>(후기 맹주): 건국자 <b>이진아시왕</b>, 고분은 고령 <b>지산동</b> 고분군. 진흥왕 때 정복돼요("고지가 저긴데 학수고대하다").</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 연도 -->
+<section id="years">
+  <span class="era">숫자로 외우기</span>
+  <h2>삼국 통일 연도표</h2>
+  <p class="lead">고구려와 백제, 신라가 얽힌 600년대 중반은 순서 배열 문제로 나오면 <b class="k">3점</b>이에요 <em class="s"></em></p>
+  <ul class="tl">
+    <li><div class="y">612</div><div class="e">살수 대첩</div><div class="m">살 수 일이(612)?</div></li>
+    <li class="hot"><div class="y">642</div><div class="e">연개소문 정변, 백제 대야성 함락</div><div class="m">육사위가죽: 김품석과 고타소 사망</div></li>
+    <li class="hot"><div class="y">645</div><div class="e">안시성 전투</div><div class="m">육신을 바쳐 싸웠어</div></li>
+    <li class="hot"><div class="y">648</div><div class="e">나당 동맹</div><div class="m">외국이랑 2판 4판 6판</div></li>
+    <li class="hot"><div class="y">660</div><div class="e">백제 멸망</div><div class="m">사비성 함락</div></li>
+    <li class="hot"><div class="y">668</div><div class="e">고구려 멸망</div><div class="m">평양성 함락</div></li>
+    <li class="hot"><div class="y">676</div><div class="e">나당 전쟁 승리</div><div class="m">삼국 통일 완성</div></li>
+  </ul>
+  <div class="plus8"><span>660</span><em>+8</em><span>668</span><em>+8</em><span>676</span></div>
+  <div class="card">
+    <ul class="pts">
+      <li>기원전 108년 고조선 멸망, 400년 광개토대왕의 5만 군사 파병.</li>
+      <li>멸망 뒤에는 부흥운동이 있어요: 백제 멸망 → 백제 부흥 → 고구려 멸망 → 고구려 부흥 → 나당 전쟁 승리.</li>
+      <li>연개소문이 죽은 해는 학설이 갈려서 강사가 666년으로 암기했어요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 기출 -->
+<section id="patterns">
+  <span class="era">기출에서 본 패턴</span>
+  <h2>이렇게 나와요</h2>
+  <div class="card">
+    <ul class="pts">
+      <li><b class="k">1번 문제</b>는 대부분 구석기나 신석기예요. 66회는 "공주 석장리" 한 단어로 풀렸어요.</li>
+      <li>72회 고조선: 한 무제 침략, 우거왕, 상·대부·장군, 8조법, 중계 무역 중 하나만 봐도 고조선이에요.</li>
+      <li>69회 철기 시대 여러 나라: 읍군·삼로 → 무천·책화로 동예 확정. 계절제·천군·소도면 삼한이에요.</li>
+      <li>71회 백제 왕 시기순: 근초고왕 → 침류왕 → 성왕. 불교 수용이 전성기보다 늦다는 점이 함정이었어요 <em class="s"></em></li>
+      <li>역사서와 편찬 왕: 근초고왕(서기, 고흥), 진흥왕(국사, 거칠부), 영양왕(신집, 이문진). 셋 다 지금은 없고, 현존 최고(最古) 역사서는 삼국사기예요.</li>
+      <li>선지에는 다른 시대 내용이 섞여 나와요. 임신서기석(신라 유교 맹세), 칠지도(백제가 일본에 준 칼), 화백 회의(신라)처럼 힌트를 하나씩 분리해서 보세요.</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<footer>유튜브 자동 자막을 바탕으로 정리했어요. 고유명사는 문맥으로 보정했으니, 시험 전에는 교재와 한 번 더 맞춰 보세요. 영상에 없는 일부 보충 설명은 정리하는 과정에서 덧붙였어요.</footer>
+</div>
+
+<script>
+(function () {
+  var btn = document.getElementById('study');
+  var on = false;
+  btn.addEventListener('click', function () {
+    on = !on;
+    document.body.classList.toggle('study', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = '암기 모드: ' + (on ? '켜짐' : '꺼짐');
+    if (!on) document.querySelectorAll('.t.on').forEach(function (t) { t.classList.remove('on'); });
+  });
+  document.addEventListener('click', function (e) {
+    if (!on) return;
+    var t = e.target.closest ? e.target.closest('.t') : null;
+    if (t) t.classList.toggle('on');
+  });
+})();
+</script>
