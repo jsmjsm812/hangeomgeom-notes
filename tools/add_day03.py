@@ -375,6 +375,32 @@ S.append(sec('end', '고려 말기', '공민왕의 개혁과 고려의 멸망',
 ]))
 
 html = ''.join(S)
+
+# ───────────── 사진 (Wikimedia Commons 자유 이용 이미지) ─────────────
+import urllib.parse
+PH = {
+ 'gaetaesa': ('논산 개태사 철확(쇠솥)', 720, 480, 'Trainholic', 'CC BY-SA 4.0', 'Iron Pot of Gaetaesa Temple.jpg'),
+ 'tripitaka': ('팔만대장경판(재조대장경)', 720, 398, 'Steve46814', 'CC BY-SA 3.0', 'Korea-Haeinsa Tripitaka Koreana woodblock 2770-06a.jpg'),
+ 'janggyeong': ('합천 해인사 장경판전', 720, 405, 'SpongeFan0304', 'CC BY-SA 4.0', '20170812.해인사 장경판전(Haeinsa Janggyeong Panjeon).01.jpg'),
+ 'hwangnyongsa': ('경주 황룡사지(9층 목탑이 있던 터)', 720, 480, 'Junho Jung (Flickr)', 'CC BY-SA 3.0', 'Korea-Gyeongju-Hwangnyongsa temple site-01.jpg'),
+ 'hangpaduri': ('제주 항파두리 항몽 유적(삼별초 최후 항전지)', 720, 540, 'Chipmunkdavis', 'CC BY-SA 4.0', 'Historic Site of Anti-Mongolian Struggle inner fortress.jpg'),
+}
+
+
+def gal(title, keys):
+    f = ''.join('<figure class="ph"><a href="img/%s.jpg" target="_blank" rel="noopener"><img src="img/%s.jpg" alt="%s" loading="lazy" width="%d" height="%d"></a><figcaption>%s</figcaption></figure>'
+                % (k, k, PH[k][0], PH[k][1], PH[k][2], PH[k][0]) for k in keys)
+    return '<article class="card figc"><h3>%s</h3><div class="gal">%s</div></article>' % (title, f)
+
+
+def inject(h, sid, c):
+    a = h.index('id="%s"' % sid)
+    e = h.index('</section>', a)
+    return h[:e] + c + h[e:]
+
+
+html = inject(html, 'taejo', gal('태조 왕건 관련 유물 사진', ['gaetaesa']))
+html = inject(html, 'mongol', gal('몽골 침입과 관련된 유물·유적 사진', ['tripitaka', 'janggyeong', 'hwangnyongsa', 'hangpaduri']))
 band = '<div class="dayhead" id="day3"><span class="dn">Day-03</span><span class="dt">고려 시대 정치사</span></div>\n'
 block = band + html
 
@@ -392,3 +418,12 @@ s = re.sub(r'<p class="sub">.*?</p>',
            s, count=1, flags=re.S)
 io.open(P, 'w', encoding='utf-8', newline='\n').write(s)
 print('Day-03 삽입 완료, 별 표시 수:', block.count('class="s"'))
+
+# 출처 목록에 추가 (이미 있으면 건너뜀)
+s = io.open(P, encoding='utf-8').read()
+if 'Iron_Pot_of_Gaetaesa' not in s:
+    lis = ''.join('<li><b>%s</b> — %s · %s · <a href="https://commons.wikimedia.org/wiki/File:%s" target="_blank" rel="noopener">원본(Wikimedia Commons)</a></li>'
+                  % (v[0], v[3], v[4], urllib.parse.quote(v[5].replace(' ', '_'), safe='()_.-,')) for v in PH.values())
+    s = s.replace('</ol></details><footer>', lis + '</ol></details><footer>', 1)
+    s = s.replace('사진 · 지도 출처 (41장)', '사진 · 지도 출처 (46장)', 1)
+    io.open(P, 'w', encoding='utf-8', newline='\n').write(s)
