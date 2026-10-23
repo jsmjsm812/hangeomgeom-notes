@@ -7,12 +7,10 @@ META = {m['k']: m for m in json.load(io.open(os.path.join(ROOT, 'tools', 'photos
 # (섹션 id, 사진 키, 캡션)
 PLACE = [
  ('pre', 'dongsam', '부산 동삼동 패총(조개무지, 신석기)'),
- ('pre', 'jeongmun', '다뉴세문경 계열 청동 거울(정문경, 청동기)'),
  ('goguryeo', 'seokchon', '서울 석촌동 고분군(백제 초기 돌무지무덤)'),
  ('goguryeo', 'hou', '호우명 그릇(경주 호우총, 광개토대왕 관련)'),
  ('goguryeo', 'gangseo', '강서대묘 현무(고구려 사신도)'),
  ('baekje', 'sataek', '사택지적비(백제)'),
- ('unified', 'jangdo', '완도 장도(장보고의 청해진 터)'),
  ('balhae', 'ibul', '이불병좌상(발해, 두 부처가 나란히 앉은 불상)'),
  ('culture', 'hyecho', '왕오천축국전(혜초)'),
  ('mid', 'samguk_yusa', '삼국유사(승려 일연)'),
