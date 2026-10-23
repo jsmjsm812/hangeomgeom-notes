@@ -13,6 +13,7 @@ PLACE = [
  ('goguryeo', 'gangseo', '강서대묘 현무(고구려 사신도)'),
  ('baekje', 'sataek', '사택지적비(백제)'),
  ('unified', 'jangdo', '완도 장도(장보고의 청해진 터)'),
+ ('balhae', 'ibul', '이불병좌상(발해, 두 부처가 나란히 앉은 불상)'),
  ('culture', 'hyecho', '왕오천축국전(혜초)'),
  ('mid', 'samguk_yusa', '삼국유사(승려 일연)'),
  ('mongol', 'cheoin', '용인 처인성(김윤후, 2차 침입)'),
