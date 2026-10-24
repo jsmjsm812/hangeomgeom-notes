@@ -6,6 +6,7 @@
 import io, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from codes_data import C, E
+import codes_goryeo  # noqa: F401  (고려 코드 덮어쓰기)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 P = os.path.join(ROOT, 'day01', 'index.html')
@@ -28,6 +29,18 @@ def mapul(m):
     return out + '</ul>'
 
 
+def chunks(gs):
+    out = '<div class="cc-chunks">'
+    for t, items in gs:
+        lis = ''.join('<li class="%s"><strong>%s</strong>%s</li>' % ('st' if st else '', esc(n), ('<span>%s</span>' % esc(d)) if d else '') for n, d, st in items)
+        out += '<div class="cc-ch"><div class="cc-ct">%s</div><ul>%s</ul></div>' % (esc(t), lis)
+    return out + '</div>'
+
+
+def body(c):
+    return chunks(c['groups']) if c.get('groups') else mapul(c['map'])
+
+
 def inline(c):
     return '<div class="cci"><p class="cc-phrase">%s</p>%s</div>' % (phrase(c['phrase']), mapul(c['map']))
 
@@ -35,7 +48,7 @@ def inline(c):
 def card(c):
     star = STAR if c.get('star') else ''
     return ('<article class="card cc"><h3>%s%s<span class="tag">%s</span></h3><p class="cc-phrase">%s</p>%s<p class="cc-story">%s</p></article>'
-            % (star, esc(c['name']), E[c['era']], phrase(c['phrase']), mapul(c['map']), esc(c['story'])))
+            % (star, esc(c['name']), E[c['era']], phrase(c['phrase']), body(c), esc(c['story'])))
 
 
 s = io.open(P, encoding='utf-8').read()
@@ -48,6 +61,20 @@ for c in C:
         pat = re.compile(r'<div class="board"><div class="bcap">' + re.escape(cap) + r'</div>(?:<div class="row"[^>]*>(?:' + TILE + r')+</div>)+</div>', re.S)
         s, n = pat.subn(lambda m: inline(c), s)
         done += n
+
+# 1-2) 고려 코드를 각 섹션 머리에 배치
+s = re.sub(r'<article class="card cc cc-top" data-code="[^"]+">.*?</article>', '', s, flags=re.S)
+placed = 0
+for c in C:
+    sid = c.get('place')
+    if not sid or sid == 'hs':
+        continue
+    a = s.find('<section class="sec" id="%s"' % sid)
+    if a < 0:
+        continue
+    h = s.index('</header>', a) + len('</header>')
+    s = s[:h] + card(c).replace('<article class="card cc">', '<article class="card cc cc-top" data-code="%s">' % c['id'], 1) + s[h:]
+    placed += 1
 
 # 2) 총정리 섹션
 a = s.find('<div class="dayhead" id="codes-head">')
@@ -84,6 +111,16 @@ mark.hl { background: linear-gradient(transparent 52%, color-mix(in srgb, var(--
 .cc-era small { font: 500 12.5px var(--f-body); color: var(--muted); }
 .cc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; align-items: start; }
 .cc-grid .card { margin: 0; }
+.cc-chunks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 22px 12px; padding-top: 12px; }
+.cc-ch { padding: 18px 12px 12px; border: 1.5px solid var(--line); border-radius: 12px; position: relative; }
+.cc-ct { position: absolute; top: -13px; left: 10px; padding: 2px 12px; border-radius: 4px 4px 12px 4px; background: var(--sticky); color: var(--sticky-fg); font: 900 15px var(--f-body); transform: rotate(-1.5deg); box-shadow: 2px 3px 0 color-mix(in srgb, var(--sticky-fg) 14%, transparent); max-width: calc(100% - 20px); }
+.cc-ch ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cc-ch li { position: relative; padding-left: 12px; font-size: 14px; line-height: 1.55; }
+.cc-ch li::before { content: ""; position: absolute; left: 0; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--marker); }
+.cc-ch li strong { font-weight: 800; }
+.cc-ch li span { display: block; font-size: 13px; color: var(--muted); }
+.cc-ch li.st strong::before { content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 4px; vertical-align: -2px; background: var(--star); -webkit-mask: var(--star-mask) center / contain no-repeat; mask: var(--star-mask) center / contain no-repeat; }
+.card.cc-top { margin-bottom: 18px; }
 '''
 MARK = '/* 암기 코드 */'
 if MARK in s:
@@ -91,4 +128,4 @@ if MARK in s:
 else:
     s = s.replace('</style>', CSS + '</style>', 1)
 io.open(P, 'w', encoding='utf-8', newline='\n').write(s)
-print('본문 보드 교체', done, '곳, 총정리 코드', len(C), '개')
+print('섹션 머리 배치', placed, '개 / 본문 보드 교체', done, '곳, 총정리 코드', len(C), '개')
