@@ -48,7 +48,7 @@ def inline(c):
 def card(c):
     star = STAR if c.get('star') else ''
     return ('<article class="card cc"><h3>%s%s<span class="tag">%s</span></h3><p class="cc-phrase">%s</p>%s<p class="cc-story">%s</p></article>'
-            % (star, esc(c['name']), E[c['era']], phrase(c['phrase']), body(c), esc(c['story'])))
+            % (star, esc(c['name']), c.get('tag', E[c['era']]), phrase(c['phrase']), body(c), esc(c['story'])))
 
 
 s = io.open(P, encoding='utf-8').read()
