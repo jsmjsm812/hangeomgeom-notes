@@ -7,6 +7,7 @@ import io, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from codes_data import C, E
 import codes_goryeo  # noqa: F401  (고려 코드 덮어쓰기)
+import codes_day04  # noqa: F401  (Day-04 코드)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 P = os.path.join(ROOT, 'day01', 'index.html')
@@ -82,7 +83,7 @@ if a >= 0:
     e = s.index('<p class="empty hide" id="empty">')
     s = s[:a] + s[e:]
 html = '<div class="dayhead" id="codes-head"><span class="dn">부록</span><span class="dt">암기 코드 총정리</span></div>\n'
-html += ('<section class="sec" id="codes"><header class="sh"><span class="era">1~3일차 암기 코드</span><h2>강사가 알려 준 암기 코드 한눈에</h2>'
+html += ('<section class="sec" id="codes"><header class="sh"><span class="era">1~4일차 암기 코드</span><h2>강사가 알려 준 암기 코드 한눈에</h2>'
          '<p class="lead">코드는 문장의 <mark class="hl">표시된 글자</mark>만 이어 읽으면 돼요. 글자마다 무엇을 가리키는지 바로 아래에 짝지어 뒀고, 별은 강사가 특히 강조한 항목이에요. 강의에 나오지 않은 코드는 넣지 않았어요.</p></header>')
 for i, name in enumerate(E):
     cs = [c for c in C if c['era'] == i]
