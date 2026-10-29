@@ -323,7 +323,7 @@ block = band + html
 s = io.open(P, encoding='utf-8').read()
 a = s.find('<div class="dayhead" id="day4">')
 if a >= 0:
-    e = min([x for x in (s.find('<div class="dayhead" id="codes-head">', a), s.find('<p class="empty hide" id="empty">', a)) if x >= 0])
+    e = min([x for x in (s.find('<div class="dayhead" id="day5">', a), s.find('<div class="dayhead" id="codes-head">', a), s.find('<p class="empty hide" id="empty">', a)) if x >= 0])
     s = s[:a] + block + s[e:]
 else:
     e = min([x for x in (s.find('<div class="dayhead" id="codes-head">'), s.find('<p class="empty hide" id="empty">')) if x >= 0])
